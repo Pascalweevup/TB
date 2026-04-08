@@ -18,7 +18,7 @@ def generate():
                     <div style={{ pageBreakAfter: 'always', paddingBottom: '20px' }}>
                         <header className="bg-white shadow-sm border-b border-gray-200 mb-8 p-4">
                             <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                                <span className="text-yellow-500">☀️</span> Fromont Briens — Séminaire 2026
+                                <span className="text-yellow-500">☀️</span> Cencora Briens — Séminaire 2026
                             </h1>
                             <p className="text-sm text-gray-500">Comparateur interactif de propositions événementielles</p>
                         </header>
@@ -65,7 +65,7 @@ def generate():
     # On ajoute un délai directement dans l'html pour signifier à puppet/chrome que c'est prêt
     # mais Chrome avec --virtual-time-budget fait déjà le job.
     
-    pdf_path = "/Users/lolaricharte/Desktop/Budget_Fromont_V2.pdf"
+    pdf_path = "/Users/lolaricharte/Desktop/Budget_Cencora_V2.pdf"
     html_url = "file://" + os.path.join(os.getcwd(), "print.html")
     
     cmd = [
