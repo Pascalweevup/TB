@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fromont Briens — Séminaire 2026 — Comparateur Budget</title>
+    <meta name="description" content="Comparateur interactif de propositions séminaire Fromont Briens 2026">
+
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- React & ReactDOM via CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <!-- Babel Standalone for JSX in-browser transpilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // --- DATA EXTRACTED FROM PDFs V2 ---
+        const budgetData = {
+            palma: {
+                id: 'palma',
+                name: "Palma de Majorque",
+                totalTTC: 75650.89,
+                totalHT: 63110.17,
+                honorairesHT: 5938.63,
+                categories: {
+                    hotellerie: 15532.92,
+                    restauration: 10829.50,
+                    activites: 4997.18,
+                    transport: 18128.94,
+                    rse: 0.00,
+                    accompagnement: 7683.00
+                },
+                details: {
+                    hotellerie: [
+                        { desc: "Chambre d'hôtel single B&B", price: 7349.96, subDesc: "Hôtel Artmadams\nDeux nuitées pour 21 personnes (21 chambres)" },
+                        { desc: "Chambre d'hôtel twin B&B", price: 7819.97, subDesc: "Hôtel Artmadams\nDeux nuitées pour 34 personnes (17 chambres)" },
+                        { desc: "Taxe de séjour", price: 363.00, subDesc: "Pour 2 nuitées" }
+                    ],
+                    restauration: [
+                        { desc: "Dîner J1 - Patron Lunares", price: 2722.50, subDesc: "Entrée - plat - dessert - eaux - vins" },
+                        { desc: "Déjeuner J2 - repas Casa Esment", price: 2178.00, subDesc: "Tapas à partager - desserts - eaux - cafés / thés" },
+                        { desc: "Déjeuner J2 - boissons Casa Esment", price: 605.00, subDesc: "Softs - Vins écologiques 1 bouteille pour 4 personnes" },
+                        { desc: "Dîner J2 - repas Cuit", price: 2783.00, subDesc: "Entrée - plat - dessert - eaux - vins - café" },
+                        { desc: "Dîner J2 - boissons Cuit", price: 363.00, subDesc: "Softs - bières (Option)" },
+                        { desc: "Déjeuner J3 - ArtMadams", price: 2541.00, subDesc: "Entrée - plat - dessert - eaux - café - thé - vins" }
+                    ],
+                    activites: [
+                        { desc: "Team building RSE", price: 2299.00, subDesc: "Atelier d'agriculture écologique" },
+                        { desc: "Activité culturelle", price: 2698.18, subDesc: "Découverte de la ville à vélo avec un itinéraire et des guides" },
+                        { desc: "Activité culturelle : challenge photo (Option)", price: 0.00, subDesc: "En attente de devis" }
+                    ],
+                    transport: [
+                        { desc: "Billets d'avion Lyon - Palma de Majorque", price: 8369.40, subDesc: "Sous réserve de disponibilité et de l'évolution du tarif\nBagage à main et cabine uniquement" },
+                        { desc: "Frais d'émission des billets Lyon", price: 708.18, subDesc: "Aller-retour" },
+                        { desc: "Billets d'avion Paris Orly - Palma de Majorque", price: 6130.80, subDesc: "Sous réserve de disponibilité et de l'évolution du tarif\nBagage à main et cabine uniquement" },
+                        { desc: "Frais d'émission des billets Paris", price: 518.76, subDesc: "Aller-retour" },
+                        { desc: "Temps homme gestion des transports", price: 600.00 },
+                        { desc: "Transferts", price: 1801.80, subDesc: "Aller-retour pour l'aéroport et le team building" }
+                    ],
+                    rse: [
+                        { desc: "Goodies passeport RSE (Option)", price: 495.00 },
+                        { desc: "Crayons à planter (Option)", price: 181.50 },
+                        { desc: "Tampons passeport (Option)", price: 48.84, subDesc: "Monture en bois" },
+                        { desc: "Création graphique (Option)", price: 200.00 },
+                        { desc: "Bilan carbone (Option)", price: 1800.00 }
+                    ],
+                    accompagnement: [
+                        { desc: "Temps homme Weever", price: 6000.00, subDesc: "Présence de 2 Weevers sur votre événement\nForfait jour avant minuit : 900€\nForfait jour dimanche avant minuit : 1 200€" },
+                        { desc: "VHR - Hébergement", price: 550.00 },
+                        { desc: "VHR - Transport", price: 858.00 },
+                        { desc: "VHR - Restauration", price: 275.00, subDesc: "5 repas" }
+                    ]
+                }
+            },
+            casablanca: {
+                id: 'casablanca',
+                name: "Casablanca",
+                totalTTC: 82473.48,
+                totalHT: 68727.90,
+                honorairesHT: 6560.26,
+                categories: {
+                    hotellerie: 12849.03,
+                    restauration: 10053.56,
+                    activites: 7468.17,
+                    transport: 23172.29,
+                    frais_annexes: 1125.77,
+                    rse: 0.00,
+                    accompagnement: 7498.82
+                },
+                details: {
+                    hotellerie: [
+                        { desc: "Chambre standard single B&B", price: 6630.16, subDesc: "Hôtel Hyatt Regency\nDeux nuitées pour 21 personnes (21 chambres)\nTaxe de séjour inclus" },
+                        { desc: "Chambre standard twin B&B", price: 6218.87, subDesc: "Hôtel Hyatt Regency\nDeux nuitées pour 34 personnes (17 chambres)\nTaxe de séjour inclus" }
+                    ],
+                    restauration: [
+                        { desc: "Dîner J1 - Braise", price: 2124.76, subDesc: "Dîner buffet incluant les boissons softs" },
+                        { desc: "Dîner J1 - Braise boissons alcoolisées", price: 403.70, subDesc: "9 bouteilles soit 1 verre de vin par personne" },
+                        { desc: "Soirée J1 - Bliss Rooftop (Option)", price: 1510.08, subDesc: "Forfait open bar premium 1h00\nJus de fruits, eaux minérales, sodas, bière, vin blanc et rouge, café et thé\nLa deuxième heure d'open bar à 22,42 €" },
+                        { desc: "Déjeuner J2 - La Sqala", price: 2359.50, subDesc: "Déjeuner incluant les boissons softs" },
+                        { desc: "Dîner J2 - Restaurant Dar Dada", price: 3082.20, subDesc: "Menu à partager et boissons softs" },
+                        { desc: "Dîner J2 - Dar Dada boissons alcoolisées", price: 1148.40, subDesc: "Forfait vin ou bière" },
+                        { desc: "Soirée J2 - Dar Beida (Option)", price: 0.00, subDesc: "Show typique marocain - en attente de devis" },
+                        { desc: "Déjeuner J3 - French Brassery", price: 935.00, subDesc: "Déjeuner au sein de l'hôtel incluant un verre de vin pour les parisiens" }
+                    ],
+                    activites: [
+                        { desc: "Guides 1/2 journée", price: 660.00, subDesc: "Guides local sur une demi journée pour vous faire visiter l'Ancienne Médina" },
+                        { desc: "Visite Mosquée Hassan II", price: 781.06, subDesc: "Avec un guide" },
+                        { desc: "Team-building : Bike builders", price: 6027.12, subDesc: "1 vélo par équipe de maximum 8 personnes\nDJ & sonorisation\nAnimateurs" },
+                        { desc: "Team-building : Plantation d'arbre (Option)", price: 5764.00, subDesc: "Gestion complète d'une activité environnementale à Casablanca pour 55 participants, comprenant la plantation d'arbres avec un centre éducatif pour la jeunesse, en collaboration avec des partenaires et lieux interculturels." }
+                    ],
+                    transport: [
+                        { desc: "Billets d'avion Lyon - Casablanca", price: 13935.53, subDesc: "Aller - Départ : 12h50 - Arrivée : 14h40\nRetour - Départ : 14h55 - Arrivée : 18h40\nSous réserve de disponibilité et de l'évolution du tarif\nBagage à main et cabine" },
+                        { desc: "Frais d'émission des billets Lyon", price: 1179.16 },
+                        { desc: "Billets d'avion Paris Orly - Casablanca", price: 6318.00, subDesc: "Aller départ : 14h40 - Arrivée : 16h50\nRetour départ : 16h55 - Arrivée : 20h55\nSous réserve de disponibilité et de l'évolution du tarif\nBagage à main et cabine" },
+                        { desc: "Frais d'émission des billets Paris", price: 534.60 },
+                        { desc: "Temps homme gestion des transports", price: 600.00 },
+                        { desc: "Transferts train aller", price: 302.50 },
+                        { desc: "Transferts train retour", price: 302.50 }
+                    ],
+                    frais_annexes: [
+                        { desc: "Frais de conversion", price: 1125.77, subDesc: "1,5% du montant total HT de la prestation" }
+                    ],
+                    rse: [
+                        { desc: "Goodies passeport RSE (Option)", price: 495.00 },
+                        { desc: "Crayons à planter (Option)", price: 181.50 },
+                        { desc: "Tampons passeport (Option)", price: 48.11, subDesc: "Monture en bois" },
+                        { desc: "Création graphique (Option)", price: 200.00 },
+                        { desc: "Bilan carbone (Option)", price: 1800.00 }
+                    ],
+                    accompagnement: [
+                        { desc: "Temps homme Weever", price: 6000.00, subDesc: "Présence de 2 Weevers sur votre événement\nForfait jour avant minuit : 900€\nForfait jour dimanche avant minuit : 1 200€" },
+                        { desc: "VHR - Hébergement", price: 365.82 },
+                        { desc: "VHR - Transport", price: 858.00 },
+                        { desc: "VHR - Restauration", price: 275.00, subDesc: "5 repas" }
+                    ]
+                }
+            }
+        };
+
+        const categoryLabels = {
+            hotellerie: "Hôtellerie",
+            restauration: "Restauration",
+            activites: "Activités",
+            transport: "Transport",
+            frais_annexes: "Frais Annexes",
+            rse: "RSE",
+            accompagnement: "Accompagnement (Weever)"
+        };
+
+        const categoryColors = {
+            hotellerie: "bg-blue-500",
+            restauration: "bg-orange-500",
+            activites: "bg-purple-500",
+            transport: "bg-slate-500",
+            frais_annexes: "bg-amber-500",
+            rse: "bg-emerald-500",
+            accompagnement: "bg-teal-500"
+        };
+
+        const textColors = {
+            hotellerie: "text-blue-500",
+            restauration: "text-orange-500",
+            activites: "text-purple-500",
+            transport: "text-slate-500",
+            frais_annexes: "text-amber-500",
+            rse: "text-emerald-500",
+            accompagnement: "text-teal-500"
+        };
+
+        // --- UTILS ---
+        const formatEur = (value) => {
+            return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value);
+        };
+
+        // --- COMPONENTS ---
+
+        // Icons
+        const IconBuilding = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg>;
+        const IconChart = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><path d="M3 9h18"></path><path d="M9 21V9"></path></svg>;
+
+        const ComparisonView = () => {
+            const venues = Object.values(budgetData);
+
+            // Sort venues by total price (ascending) to find the cheapest
+            const sortedVenues = [...venues].sort((a, b) => a.totalHT - b.totalHT);
+            const maxTotalHT = Math.max(...venues.map(v => v.totalHT));
+
+            return (
+                <div className="space-y-8 animate-fade-in">
+
+                    {/* Top KPI Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {venues.map((venue) => {
+                            return (
+                                <div key={venue.id} className="relative bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{venue.name}</h3>
+                                    <div className="mb-2">
+                                        <p className="text-sm text-gray-500 uppercase tracking-wide">Budget Total TTC</p>
+                                        <p className="text-3xl font-bold text-gray-900">{formatEur(venue.totalTTC)}</p>
+                                    </div>
+                                    <div className="flex justify-between text-sm text-gray-500 mt-4 pt-4 border-t border-gray-100">
+                                        <span>Total HT: {formatEur(venue.totalHT)}</span>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* Visual Bar Chart */}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-6">Répartition par catégorie (HT)</h3>
+
+                        <div className="space-y-6">
+                            {venues.map(venue => (
+                                <div key={venue.id}>
+                                    <div className="flex justify-between text-sm font-medium mb-2">
+                                        <span>{venue.name}</span>
+                                        <span>{formatEur(venue.totalHT - venue.honorairesHT)} HT <span className="text-gray-400 font-normal">(hors honoraires)</span></span>
+                                    </div>
+                                    {/* Stacked Bar Container */}
+                                    <div className="h-6 w-full bg-gray-100 rounded-full overflow-hidden flex">
+                                        {Object.entries(venue.categories).map(([catKey, catValue]) => {
+                                            const percentage = (catValue / maxTotalHT) * 100;
+                                            return (
+                                                <div
+                                                    key={catKey}
+                                                    className={`h-full ${categoryColors[catKey]} group relative cursor-pointer border-r border-white/20 last:border-0`}
+                                                    style={{ width: `${percentage}%` }}
+                                                >
+                                                    {/* Tooltip */}
+                                                    <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded py-1 px-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 whitespace-nowrap">
+                                                        {categoryLabels[catKey]}: {formatEur(catValue)} HT
+                                                        <svg className="absolute text-gray-900 h-2 w-full left-0 top-full" x="0px" y="0px" viewBox="0 0 255 255"><polygon className="fill-current" points="0,0 127.5,127.5 255,0" /></svg>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Legend */}
+                        <div className="mt-6 flex flex-wrap gap-4 pt-4 border-t border-gray-100">
+                            {Object.entries(categoryLabels).map(([key, label]) => (
+                                <div key={key} className="flex items-center text-xs text-gray-600">
+                                    <span className={`w-3 h-3 rounded-full mr-2 ${categoryColors[key]}`}></span>
+                                    {label}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Detailed Data Table */}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200 text-sm">
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Poste de Dépense (HT)</th>
+                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Palma de Majorque</th>
+                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Casablanca</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    {Object.keys(categoryLabels).map(catKey => {
+                                        // Find minimum value in this category to highlight it
+                                        const values = venues.map(v => v.categories[catKey] || 0);
+                                        const minVal = Math.min(...values);
+
+                                        return (
+                                            <tr key={catKey} className="hover:bg-gray-50 transition-colors">
+                                                <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900 flex items-center">
+                                                    <span className={`w-2 h-2 rounded-full mr-2 ${categoryColors[catKey]}`}></span>
+                                                    {categoryLabels[catKey]}
+                                                </td>
+                                                {venues.map(venue => {
+                                                    const val = venue.categories[catKey] || 0;
+                                                    const isMin = val === minVal;
+                                                    return (
+                                                        <td key={`${catKey}-${venue.id}`} className={`px-6 py-4 whitespace-nowrap text-right ${isMin ? 'text-green-600 font-semibold' : 'text-gray-600'}`}>
+                                                            {formatEur(val)}
+                                                        </td>
+                                                    );
+                                                })}
+                                            </tr>
+                                        )
+                                    })}
+
+                                    {/* Honoraires Row */}
+                                    <tr className="bg-gray-50 border-t-2 border-gray-200">
+                                        <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Honoraires Agence</td>
+                                        {venues.map(venue => (
+                                            <td key={`hon-${venue.id}`} className="px-6 py-4 whitespace-nowrap text-right text-gray-600">
+                                                {formatEur(venue.honorairesHT)}
+                                            </td>
+                                        ))}
+                                    </tr>
+
+                                    {/* Totals Row TTC */}
+                                    <tr className="bg-sky-50 border-t border-sky-200">
+                                        <td className="px-6 py-4 whitespace-nowrap font-bold text-sky-900">TOTAL TTC</td>
+                                        {venues.map(venue => {
+                                            const isCheapest = venue.id === sortedVenues[0].id;
+                                            return (
+                                                <td key={`tot-ttc-${venue.id}`} className={`px-6 py-4 whitespace-nowrap text-right font-bold text-lg ${isCheapest ? 'text-green-600' : 'text-sky-900'}`}>
+                                                    {formatEur(venue.totalTTC)}
+                                                </td>
+                                            );
+                                        })}
+                                    </tr>
+
+                                    {/* Sub Totals Row HT */}
+                                    <tr className="bg-sky-50/50">
+                                        <td className="px-6 py-3 whitespace-nowrap text-sm text-sky-700">Total HT</td>
+                                        {venues.map(venue => (
+                                            <td key={`tot-ht-${venue.id}`} className="px-6 py-3 whitespace-nowrap text-right text-sm text-sky-700">
+                                                {formatEur(venue.totalHT)}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            );
+        };
+
+        const VenueDetailView = ({ venueId }) => {
+            const venue = budgetData[venueId];
+            const subtotalHT = venue.totalHT - venue.honorairesHT;
+
+            return (
+                <div className="space-y-6 animate-fade-in">
+
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <h2 className="text-2xl font-bold text-gray-900">{venue.name}</h2>
+                            <p className="text-gray-500">Détail du devis estimatif</p>
+                        </div>
+                        <div className="text-right bg-sky-50 p-4 rounded-lg border border-sky-100">
+                            <p className="text-sm font-medium text-sky-600 uppercase tracking-wider mb-1">Total TTC</p>
+                            <p className="text-3xl font-bold text-sky-900">{formatEur(venue.totalTTC)}</p>
+                            <p className="text-xs text-sky-500 mt-1">Total HT: {formatEur(venue.totalHT)}</p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                        {/* List Breakdown */}
+                        <div className="lg:col-span-2 space-y-4">
+                            {Object.entries(venue.categories).map(([catKey, catValue]) => {
+                                const percentage = ((catValue / subtotalHT) * 100).toFixed(1);
+                                return (
+                                    <div key={catKey} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 flex flex-col gap-4">
+                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`min-w-[3.5rem] px-2 h-10 rounded-lg flex items-center justify-center text-white ${categoryColors[catKey]}`}>
+                                                    <span className="font-bold text-sm">{percentage}%</span>
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-semibold text-gray-900">{categoryLabels[catKey]}</h4>
+                                                    <div className="w-48 bg-gray-200 rounded-full h-1.5 mt-2">
+                                                        <div className={`${categoryColors[catKey]} h-1.5 rounded-full`} style={{ width: `${percentage}%` }}></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-lg font-bold text-gray-900">{formatEur(catValue)}</p>
+                                                <p className="text-xs text-gray-500">HT</p>
+                                            </div>
+                                        </div>
+
+                                        {/* Lignes de détail */}
+                                        {venue.details && venue.details[catKey] && (
+                                            <div className="mt-2 pt-4 border-t border-gray-100 space-y-3">
+                                                {venue.details[catKey].map((item, idx) => (
+                                                    <div key={idx} className="flex flex-col text-sm border-b border-gray-50 pb-2 last:border-0 last:pb-0">
+                                                        <div className="flex justify-between items-start gap-4">
+                                                            <span className="text-gray-800 font-medium">{item.desc}</span>
+                                                            <span className="text-gray-900 font-bold whitespace-nowrap">{formatEur(item.price)}</span>
+                                                        </div>
+                                                        {item.subDesc && (
+                                                            <div className="text-gray-500 text-xs mt-1 italic leading-relaxed whitespace-pre-line pr-16">
+                                                                {item.subDesc}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+
+                            <div className="bg-gray-50 rounded-lg border border-gray-200 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div>
+                                    <h4 className="font-semibold text-gray-900">Honoraires Weever</h4>
+                                    <p className="text-sm text-gray-500">Calculés sur le sous-total HT</p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-lg font-bold text-gray-900">{formatEur(venue.honorairesHT)}</p>
+                                    <p className="text-xs text-gray-500">HT</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Summary Box */}
+                        <div className="lg:col-span-1">
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">Récapitulatif Financier</h3>
+                                <div className="space-y-3 text-sm">
+                                    <div className="flex justify-between text-gray-600">
+                                        <span>Sous-total HT</span>
+                                        <span>{formatEur(subtotalHT)}</span>
+                                    </div>
+                                    <div className="flex justify-between text-gray-600">
+                                        <span>Honoraires HT</span>
+                                        <span>{formatEur(venue.honorairesHT)}</span>
+                                    </div>
+                                    <div className="border-t pt-3 flex justify-between text-gray-500 text-sm">
+                                        <span>Total HT</span>
+                                        <span>{formatEur(venue.totalHT)}</span>
+                                    </div>
+                                    <div className="flex justify-between text-gray-500 text-sm mt-1">
+                                        <span>TVA estimée</span>
+                                        <span>{formatEur(venue.totalTTC - venue.totalHT)}</span>
+                                    </div>
+                                    <div className="border-t pt-3 mt-2 flex justify-between font-bold text-sky-600 text-lg">
+                                        <span>Total TTC</span>
+                                        <span>{formatEur(venue.totalTTC)}</span>
+                                    </div>
+                                </div>
+
+                                <div className="mt-6 bg-blue-50 text-blue-800 text-xs p-3 rounded border border-blue-100">
+                                    <strong>Note:</strong> Les montants indiqués (notamment les transports) sont provisionnels et seront ajustés au réel. Les postes RSE sont en option.
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            );
+        };
+
+        function App() {
+            const [activeTab, setActiveTab] = useState('compare');
+
+            return (
+                <div className="min-h-screen bg-slate-50 pb-12 font-sans">
+                    {/* Header */}
+                    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div>
+                                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                                        <span className="text-yellow-500">☀️</span> Fromont Briens — Séminaire 2026
+                                    </h1>
+                                    <p className="text-sm text-gray-500">Comparateur interactif de propositions séminaire</p>
+                                </div>
+
+                                {/* Navigation Tabs */}
+                                <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg overflow-x-auto">
+                                    <button
+                                        onClick={() => setActiveTab('compare')}
+                                        className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md whitespace-nowrap transition-colors ${activeTab === 'compare' ? 'bg-white text-sky-600 shadow-sm' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'}`}
+                                    >
+                                        <IconChart /> Vue Comparée
+                                    </button>
+                                    {Object.values(budgetData).map(venue => (
+                                        <button
+                                            key={venue.id}
+                                            onClick={() => setActiveTab(venue.id)}
+                                            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md whitespace-nowrap transition-colors ${activeTab === venue.id ? 'bg-white text-sky-600 shadow-sm' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'}`}
+                                        >
+                                            <IconBuilding /> {venue.name}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Main Content */}
+                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+                        {activeTab === 'compare' ? <ComparisonView /> : <VenueDetailView venueId={activeTab} />}
+                    </main>
+                </div>
+            );
+        }
+
+        // Mount the app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+
+</body>
+
+</html>
