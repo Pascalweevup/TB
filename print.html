@@ -81,6 +81,7 @@
     <script type="text/babel">
         const { useState } = React;
 
+        // --- DATA EXTRACTED FROM PDFs ---
         const budgetData = {
     "cinquieme_sens": {
         "id": "cinquieme_sens",
@@ -308,7 +309,7 @@
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
-                                    {Object.keys(categoryLabels).map(catKey => {
+                                    {Object.keys(categoryLabels).filter(catKey => venues.some(v => v.categories[catKey] > 0)).map(catKey => {
                                         // Find minimum value in this category to highlight it
                                         const values = venues.map(v => v.categories[catKey] || 0);
                                         const minVal = Math.min(...values);
@@ -406,7 +407,7 @@
 
                         {/* List Breakdown */}
                         <div className="lg:col-span-2 space-y-4">
-                            {Object.entries(venue.categories).map(([catKey, catValue]) => {
+                            {Object.entries(venue.categories).filter(([_, catValue]) => catValue > 0).map(([catKey, catValue]) => {
                                 const percentage = ((catValue / subtotalHT) * 100).toFixed(1);
                                 return (
                                     <div key={catKey} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 flex flex-col gap-4">
@@ -512,10 +513,11 @@
             return (
                 <div className="bg-slate-50 font-sans">
                     <div style={{ pageBreakAfter: 'always', paddingBottom: '20px' }}>
-                                <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                                    KPMG — Séminaire Financier
-                                </h1>
-                                <p className="text-sm text-gray-500">Comparateur interactif de propositions événementielles</p>
+                        <header className="bg-white shadow-sm border-b border-gray-200 mb-8 p-4">
+                            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                                KPMG — Séminaire Financier
+                            </h1>
+                            <p className="text-sm text-gray-500">Comparateur interactif de propositions événementielles</p>
                         </header>
                         <main className="max-w-7xl mx-auto px-4">
                             <ComparisonView />
