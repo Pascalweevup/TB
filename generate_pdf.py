@@ -15,7 +15,7 @@ def generate():
         function App() {
             return (
                 <div className="bg-slate-50 font-sans">
-                    <div style={{ pageBreakAfter: 'always', paddingBottom: '20px' }}>
+                    <div style={{ pageBreakAfter: 'always', paddingBottom: '40px', minHeight: '100vh' }}>
                         <header className="bg-white shadow-sm border-b border-gray-200 mb-8 p-4">
                             <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                                 KPMG — Séminaire Financier
@@ -28,7 +28,7 @@ def generate():
                     </div>
 
                     {Object.values(budgetData).map(venue => (
-                        <div key={venue.id} style={{ pageBreakAfter: 'always', paddingBottom: '20px' }}>
+                        <div key={venue.id} style={{ pageBreakAfter: 'always', paddingBottom: '40px', minHeight: '100vh' }}>
                             <main className="max-w-7xl mx-auto px-4">
                                 <VenueDetailView venueId={venue.id} />
                             </main>
@@ -42,16 +42,31 @@ def generate():
     # Remplacer la fonction App
     content = re.sub(r'function App\(\)\s*\{.*?\}\s*(?=// Mount the app)', app_replacement, content, flags=re.DOTALL)
 
-    # Ajouter quelques styles d'impression pour forcer l'affichage sans délai et sur 1 page/onglet
+    # Styles d'impression optimisés pour éviter les coupures
     style_print = """
         @media print {
-            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #f8fafc !important; }
+            body { 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+                background-color: #f8fafc !important;
+                width: 100%;
+            }
             .shadow-sm { box-shadow: none !important; border: 1px solid #e2e8f0 !important; }
-            /* Désactiver les animations pour que le contenu ne soit pas invisible dans Chrome Headless (opacity 0) */
-            * { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; }
+            /* Désactiver les animations */
+            * { 
+                animation: none !important; 
+                transition: none !important; 
+                opacity: 1 !important; 
+                transform: none !important; 
+            }
             @page {
-                size: A3 landscape;
-                margin: 0;
+                size: A4 portrait;
+                margin: 10mm;
+            }
+            /* Éviter les coupures à l'intérieur des blocs importants */
+            .bg-white.rounded-xl, .bg-white.rounded-lg {
+                break-inside: avoid;
+                page-break-inside: avoid;
             }
         }
     """
@@ -62,10 +77,7 @@ def generate():
 
     print("Fichier print.html généré.")
     
-    # On ajoute un délai directement dans l'html pour signifier à puppet/chrome que c'est prêt
-    # mais Chrome avec --virtual-time-budget fait déjà le job.
-    
-    pdf_path = "/Users/lolaricharte/Desktop/Budget_KPMG.pdf"
+    pdf_path = "/Users/lolaricharte/Desktop/Budget_KPMG_Final.pdf"
     html_url = "file://" + os.path.join(os.getcwd(), "print.html")
     
     cmd = [
@@ -78,9 +90,9 @@ def generate():
         html_url
     ]
     
-    print("Génération du PDF en cours via Chrome...")
+    print("Génération du PDF en cours...")
     subprocess.run(cmd, check=True)
-    print(f"PDF généré avec succès à l'emplacement : {pdf_path}")
+    print(f"PDF généré avec succès : {pdf_path}")
 
 if __name__ == "__main__":
     generate()
