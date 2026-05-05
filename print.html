@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monétik — Comparateur Budget Séminaire</title>
-    <meta name="description" content="Comparateur interactif de propositions événementielles pour Monétik — Escape Work">
+    <title>KPMG — Séminaire Financier — Comparateur Budget</title>
+    <meta name="description" content="Comparateur interactif de propositions pour le séminaire financier KPMG">
 
     <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -109,208 +109,101 @@
 
         // --- DATA EXTRACTED FROM PDFs ---
         const budgetData = {
-    "courances": {
-        "id": "courances",
-        "name": "Pierres d'Histoire — Domaine de Courances",
-        "totalTTC": 41047.01,
-        "totalHT": 34205.84,
-        "honorairesHT": 3664.91,
-        "paxCount": 40,
+    "goodplanet": {
+        "id": "goodplanet",
+        "name": "Fondation GoodPlanet",
+        "totalTTC": 2915.07,
+        "totalHT": 2429.23,
+        "honorairesHT": 115.68,
+        "paxCount": 50,
         "categories": {
-            "hebergement": 8232.00,
-            "reunions": 5140.80,
-            "restauration": 9237.28,
-            "activites": 7110.25,
+            "hebergement": 0.0,
+            "reunions": 2090.0,
+            "restauration": 0.0,
+            "gestion": 223.55,
             "accompagnement": 0.0
         },
         "details": {
-            "hebergement": [
-                {
-                    "desc": "Chambres single",
-                    "price": 7920.00,
-                    "subDesc": "40 pièces × 198,00 € HT — 4 nuitées pour 40 personnes"
-                },
-                {
-                    "desc": "Taxe de séjour",
-                    "price": 312.00,
-                    "subDesc": "40 pièces × 7,80 €"
-                }
-            ],
             "reunions": [
                 {
-                    "desc": "Location des salles de réunion",
-                    "price": 5140.80,
-                    "subDesc": "Le Fénil et le Loft — forfait"
+                    "desc": "MY PLANET - Quiz Interactif",
+                    "price": 2090.0,
+                    "subDesc": "Plusieurs thématiques disponibles :\n- Question pour un champion de l'écologie\n- Tout savoir sur le carbone\n- Testez vos connaissances sur les énergies\n- Vivant parmi les vivants\nFormat de 1h à 1h30\nA la fondation GoodPlanet ou dans vos locaux"
                 }
             ],
             "restauration": [
                 {
-                    "desc": "Petits-déjeuners",
-                    "price": 771.12,
-                    "subDesc": "40 pièces × 19,28 € HT"
-                },
-                {
-                    "desc": "Pauses du matin",
-                    "price": 642.60,
-                    "subDesc": "40 pièces × 16,07 € HT"
-                },
-                {
-                    "desc": "Déjeuners",
-                    "price": 2142.00,
-                    "subDesc": "50 pièces × 42,84 € HT"
-                },
-                {
-                    "desc": "Dîners",
-                    "price": 2741.76,
-                    "subDesc": "40 pièces × 68,54 € HT"
-                },
-                {
-                    "desc": "Service traiteur à la journée",
-                    "price": 3522.40,
-                    "subDesc": "10 pièces × 352,24 € HT — Service à l'assiette de l'ensemble des repas"
-                },
-                {
-                    "desc": "Déjeuner plancha",
-                    "price": 238.00,
-                    "subDesc": "10 pièces × 23,80 € HT — Supplément déjeuner plancha mercredi (tarif indicatif)",
-                    "isOption": true
-                },
-                {
-                    "desc": "Dîner gastronomique",
-                    "price": 2800.00,
-                    "subDesc": "1 forfait — Supplément dîner gastronomique jeudi (tarif indicatif)",
+                    "desc": "Option - Pause gourmande",
+                    "price": 825.0,
+                    "subDesc": "50 unités — 16,50 € / unité",
                     "isOption": true
                 }
             ],
-            "activites": [
+            "gestion": [
                 {
-                    "desc": "Atelier parfum d'exception",
-                    "price": 1785.00,
-                    "subDesc": "1 forfait — tarif indicatif, en attente de confirmation du prestataire"
+                    "desc": "Transport PMR",
+                    "price": 223.55,
+                    "subDesc": "Véhicule TPMR homologué"
                 },
                 {
-                    "desc": "Activité Lego Serious Play®",
-                    "price": 2975.00,
-                    "subDesc": "1 forfait — tarif indicatif, en attente de confirmation du prestataire"
-                },
-                {
-                    "desc": "Activité randonnée en forêt",
-                    "price": 595.00,
-                    "subDesc": "1 forfait — tarif indicatif, en attente de confirmation du prestataire"
-                },
-                {
-                    "desc": "Animation Casino",
-                    "price": 1755.25,
-                    "subDesc": "Soirée mercredi — 3 choix parmi Poker, Roulette, Black Jack et Chuk a Luck"
+                    "desc": "Transport groupe (Bus 51 passagers + 1 PMR)",
+                    "price": 696.0,
+                    "isOption": true,
+                    "subDesc": "Mise à disposition 4 heures"
                 }
             ],
             "accompagnement": [
                 {
-                    "desc": "Bilan carbone",
-                    "price": 1800.00,
-                    "isOption": true
-                },
-                {
                     "desc": "Weever",
-                    "price": 600.00,
-                    "subDesc": "Présence d'un accompagnant le premier jour du séminaire",
+                    "price": 400.0,
                     "isOption": true
                 },
                 {
-                    "desc": "VHR - Restauration",
-                    "price": 25.00,
-                    "isOption": true
-                },
-                {
-                    "desc": "VHR - Transport",
-                    "price": 195.00,
-                    "subDesc": "Frais kilométriques à affiner selon la destination choisie",
-                    "isOption": true
-                },
-                {
-                    "desc": "Repérage",
-                    "price": 495.00,
+                    "desc": "Transport",
+                    "price": 65.0,
                     "isOption": true
                 }
             ]
         }
     },
-    "homanie": {
-        "id": "homanie",
-        "name": "Homanie — Lyons-la-Forêt",
-        "totalTTC": 35691.60,
-        "totalHT": 29743.00,
-        "honorairesHT": 3186.75,
-        "paxCount": 40,
+    "cinquieme_sens": {
+        "id": "cinquieme_sens",
+        "name": "Cinquième Sens",
+        "totalTTC": 3839.22,
+        "totalHT": 3199.35,
+        "honorairesHT": 152.35,
+        "paxCount": 50,
         "categories": {
-            "hebergement": 19306.25,
-            "reunions": 0.0,
-            "restauration": 0.0,
-            "activites": 5875.00,
+            "hebergement": 0.0,
+            "reunions": 1617.0,
+            "restauration": 1430.0,
+            "gestion": 0.0,
             "accompagnement": 0.0
         },
         "details": {
-            "hebergement": [
+            "reunions": [
                 {
-                    "desc": "Privatisation du lieu",
-                    "price": 19306.25,
-                    "subDesc": "Forfait comprenant l'hébergement, la taxe de séjour, la salle de réunion et la restauration\n(4 petits-déjeuners, 5 déjeuners buffet ou barbecue, 4 dîners servis à l'assiette avec vins, 4 collations)"
-                },
-                {
-                    "desc": "Dîner gastronomique",
-                    "price": 1375.00,
-                    "subDesc": "10 personnes × 137,50 € HT — Supplément dîner gastronomique jeudi (tarif indicatif)",
-                    "isOption": true
+                    "desc": "Atelier Création de parfum - 2h",
+                    "price": 1617.0,
+                    "subDesc": "2 Animateurs parfumeurs\nFormat : 2h00\nDéplacement dans vos locaux inclus\n(à prévoir : tables et chaises, vidéo-projecteur, stylos)"
                 }
             ],
-            "activites": [
+            "restauration": [
                 {
-                    "desc": "Atelier de fabrication de cidre",
-                    "price": 1250.00,
-                    "subDesc": "1 forfait — tarif indicatif, en attente de confirmation du prestataire"
-                },
-                {
-                    "desc": "Activité escape game",
-                    "price": 1250.00,
-                    "subDesc": "1 forfait — tarif indicatif, en attente de confirmation du prestataire"
-                },
-                {
-                    "desc": "Activité canoë sur l'Eure",
-                    "price": 1875.00,
-                    "subDesc": "1 forfait — tarif indicatif, en attente de confirmation du prestataire"
-                },
-                {
-                    "desc": "Animation blind test",
-                    "price": 1500.00,
-                    "subDesc": "1 forfait"
+                    "desc": "Flacon vaporisateur 15 ml",
+                    "price": 1430.0,
+                    "subDesc": "50 unités — 28,60 € / unité\nLivraison dans vos locaux sous 8 jours incluse"
                 }
             ],
             "accompagnement": [
                 {
-                    "desc": "Bilan carbone",
-                    "price": 1800.00,
+                    "desc": "Weever - forfait 1/2 journée",
+                    "price": 400.0,
                     "isOption": true
                 },
                 {
-                    "desc": "Weever",
-                    "price": 600.00,
-                    "subDesc": "Accompagnement le premier jour du séminaire",
-                    "isOption": true
-                },
-                {
-                    "desc": "VHR - Restauration",
-                    "price": 25.00,
-                    "isOption": true
-                },
-                {
-                    "desc": "VHR - Transport",
-                    "price": 195.00,
-                    "subDesc": "Frais kilométriques à affiner selon la destination choisie",
-                    "isOption": true
-                },
-                {
-                    "desc": "Repérage",
-                    "price": 495.00,
+                    "desc": "Transport",
+                    "price": 65.0,
                     "isOption": true
                 }
             ]
@@ -319,18 +212,18 @@
 };
 
         const categoryLabels = {
-    "hebergement": "H\u00e9bergement \u0026 Lieu",
-    "reunions": "Salles de R\u00e9union",
-    "restauration": "Restauration",
-    "activites": "Activit\u00e9s \u0026 Animations",
-    "accompagnement": "Accompagnement"
+    "hebergement": "H\u00e9bergement",
+    "reunions": "Activit\u00e9 Coh\u00e9sion",
+    "restauration": "Restauration & Animation",
+    "gestion": "Gestion des participants",
+    "accompagnement": "Accompagnement (Weever)"
 };
 
         const categoryColors = {
     "hebergement": "bg-blue-500",
     "reunions": "bg-purple-500",
     "restauration": "bg-orange-500",
-    "activites": "bg-emerald-500",
+    "gestion": "bg-amber-500",
     "accompagnement": "bg-teal-500"
 };
 
@@ -501,7 +394,7 @@
 
                                     {/* Prix par personne */}
                                     <tr className="bg-sky-50/50">
-                                        <td className="px-6 py-3 whitespace-nowrap text-sm font-semibold text-sky-700">Prix par personne HT (40 pers.)</td>
+                                        <td className="px-6 py-3 whitespace-nowrap text-sm font-semibold text-sky-700">Prix par personne HT (50 pers.)</td>
                                         {venues.map(venue => (
                                             <td key={`pp-${venue.id}`} className="px-6 py-3 whitespace-nowrap text-right text-sm font-semibold text-sky-700">
                                                 {formatEur(venue.totalHT / venue.paxCount)}
@@ -590,7 +483,7 @@
 
                             <div className="bg-gray-50 rounded-lg border border-gray-200 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div>
-                                    <h4 className="font-semibold text-gray-900">Honoraires Agence (5%)</h4>
+                                    <h4 className="font-semibold text-gray-900">Honoraires Weever (5%)</h4>
                                     <p className="text-sm text-gray-500">Calculés sur le sous-total HT</p>
                                 </div>
                                 <div className="text-right">
@@ -644,7 +537,7 @@
                     <div className="print-section">
                         <header className="bg-white shadow-sm border-b border-gray-200 mb-8 p-4">
                             <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                                Monétik — Escape Work
+                                KPMG — Séminaire Financier
                             </h1>
                             <p className="text-sm text-gray-500">Comparateur interactif de propositions événementielles</p>
                         </header>
